@@ -24,21 +24,17 @@ def get_random_color() -> Tuple[int, int, int]:
 def load_model(weights_file: str, cfg_file: str) -> cv2.dnn.DetectionModel:
     """Load yolo model with cv.dnn."""
 
-    net = cv2.dnn.readNet(weights_file, cfg_file)
+    net: cv2.dnn.Net = cv2.dnn.readNet(weights_file, cfg_file)
+
+    if net.empty():
+        raise ValueError(f"Model {weights_file} and {cfg_file} not loaded")
 
     model: cv2.dnn.DetectionModel = cv2.dnn.DetectionModel(net)
-    model.setInputParams(size=(416, 416), scale=1 / 255, swapRB=True)
 
     return model
 
 
-def draw_boxes(
-    original_image: np.ndarray,
-    boxes: List[List[int]],
-    detected_classes: List[int],
-    classes: List[str],
-    confidences: List[float],
-):
+def draw_boxes(original_image, boxes, detected_classes, classes, confidences):
     """Draw draws multiple boxes on the image."""
     for index, box in enumerate(boxes):
         draw_bounding_box(
@@ -76,18 +72,19 @@ def detect(net: cv2.dnn.DetectionModel, input_image: str, classes: List[str]):
 
     now: datetime = datetime.now()
 
+    # Prepare the model
+    net.setInputParams(size=(416, 416), scale=1 / 255, swapRB=True)
+
     # Perform inference
     detected_classes, scores, boxes = net.detect(original_image, THRESHOLD, 0.25)
 
     elapsed_time: float = (datetime.now() - now).total_seconds() * 1000
     print(f"{elapsed_time:.0f}")
 
-    # # Apply NMS (Non-maximum suppression)
-    # result_boxes = cv2.dnn.NMSBoxes(boxes, scores, THRESHOLD, 0.45, 0.25)
-
+    # Draw boxes on image
     draw_boxes(original_image, boxes, detected_classes, classes, scores)
 
-    # Write the image to disk
+    # Save the image
     cv2.imwrite("python_inference.jpg", original_image)
 
 

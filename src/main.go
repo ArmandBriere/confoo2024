@@ -39,9 +39,9 @@ func getRandomColor() color.RGBA {
 // init loads the Yolo model.
 func loadModel(yoloModelName string, yoloModelCfg string) gocv.Net {
 	net := gocv.ReadNet(yoloModelName, yoloModelCfg)
+
 	if net.Empty() {
-		// fmt.Println("Reading network model from file: empty model")
-		panic(1)
+		panic("Failed to load the model")
 	}
 
 	return net
@@ -50,17 +50,17 @@ func loadModel(yoloModelName string, yoloModelCfg string) gocv.Net {
 // drawBoxes draws multiple boxes on the image.
 func drawBoxes(originalImage *gocv.Mat, detectedObjects []*DetectedObject) {
 	for _, detectedObject := range detectedObjects {
-		drawBoundingBox(originalImage, detectedObject.Rect, detectedObject.ClassName, detectedObject.Confidence)
+		drawBoundingBox(originalImage, detectedObject.Rect, detectedObject.ClassName, detectedObject.Accuracy)
 	}
 }
 
 // drawBoundingBox draws a box on the image.
-func drawBoundingBox(img *gocv.Mat, rect image.Rectangle, className string, confidence float32) {
+func drawBoundingBox(img *gocv.Mat, rect image.Rectangle, className string, accuracy float32) {
 	// Get a random color
 	randomColor := getRandomColor()
 
 	// Prepare label
-	confidenceStr := strconv.FormatFloat(float64(confidence), 'f', 2, 32)
+	confidenceStr := strconv.FormatFloat(float64(accuracy), 'f', 2, 32)
 	text := className + " (" + confidenceStr + ")"
 
 	// Draw rectangle and text
@@ -89,6 +89,7 @@ func detect(net gocv.Net, imgPath string, classes []string) {
 
 	startingTime := time.Now()
 
+	// Perform inference
 	probs := net.ForwardLayers(getOutputLayerNames(&net))
 
 	// Clear gocv.Mat
@@ -107,6 +108,7 @@ func detect(net gocv.Net, imgPath string, classes []string) {
 	if len(detected) == 0 {
 		fmt.Println("No classes found")
 	} else {
+		// Draw boxes on image
 		drawBoxes(&img, detected)
 	}
 
@@ -116,17 +118,17 @@ func detect(net gocv.Net, imgPath string, classes []string) {
 
 // DetectedObject Store detected object info
 type DetectedObject struct {
-	Rect       image.Rectangle
-	ClassID    int
-	ClassName  string
-	Confidence float32
+	Rect      image.Rectangle
+	ClassID   int
+	ClassName string
+	Accuracy  float32
 }
 
 // postProcess processes the output of the Yolo model.
 func postProcess(detections []gocv.Mat, nmsThreshold float32, frameWidth, frameHeight float32, netClasses []string) []*DetectedObject {
 	var detectedObjects []*DetectedObject
 	var boundingBoxes []image.Rectangle
-	var confidences []float32
+	var accuracyList []float32
 
 	for i, yoloLayer := range detections {
 		cols := yoloLayer.Cols()
@@ -139,22 +141,23 @@ func postProcess(detections []gocv.Mat, nmsThreshold float32, frameWidth, frameH
 		for j := 0; j < yoloLayer.Total(); j += cols {
 			row := data[j : j+cols]
 			scores := row[5:]
-			classID, confidence := getClassIDAndConfidence(scores)
+
+			classID, accuracy := getClassIDAndAccuracy(scores)
 			className := netClasses[classID]
 
-			// Remove the bounding boxes with low confidence
-			if confidence > threshold {
+			// Remove the bounding boxes with low accuracy
+			if accuracy > threshold {
 				// Calculate bounding box
 				boundingBox := calculateBoundingBox(frameWidth, frameHeight, row)
 
 				// Append data to the lists
-				confidences = append(confidences, confidence)
+				accuracyList = append(accuracyList, accuracy)
 				boundingBoxes = append(boundingBoxes, boundingBox)
 				detectedObjects = append(detectedObjects, &DetectedObject{
-					Rect:       boundingBox,
-					ClassName:  className,
-					ClassID:    classID,
-					Confidence: confidence,
+					Rect:      boundingBox,
+					ClassName: className,
+					ClassID:   classID,
+					Accuracy:  accuracy,
 				})
 			}
 		}
@@ -169,7 +172,7 @@ func postProcess(detections []gocv.Mat, nmsThreshold float32, frameWidth, frameH
 	}
 
 	// Apply non-maximum suppression
-	indices = gocv.NMSBoxes(boundingBoxes, confidences, threshold, nmsThreshold)
+	indices = gocv.NMSBoxes(boundingBoxes, accuracyList, threshold, nmsThreshold)
 	filteredDetectedObjects := make([]*DetectedObject, 0, len(detectedObjects))
 	for i, idx := range indices {
 		if idx < 0 || (i != 0 && idx == 0) {
@@ -183,18 +186,18 @@ func postProcess(detections []gocv.Mat, nmsThreshold float32, frameWidth, frameH
 	return filteredDetectedObjects
 }
 
-// getClassIDAndConfidence returns the class ID and confidence of the detected object.
-func getClassIDAndConfidence(x []float32) (int, float32) {
+// getClassIDAndAccuracy returns the class ID and accuracy of the detected object.
+func getClassIDAndAccuracy(x []float32) (int, float32) {
 	classID := 0
-	confidence := float32(0.0)
+	accuracy := float32(0.0)
 	for i, y := range x {
-		if y > confidence {
-			confidence = y
+		if y > accuracy {
+			accuracy = y
 			classID = i
 		}
 	}
 
-	return classID, confidence
+	return classID, accuracy
 }
 
 // calculateBoundingBox calculates the bounding box of the detected object.
@@ -218,7 +221,7 @@ type Config struct {
 }
 
 // loadYAML loads the YAML file and returns the Config struct
-func loadYAML(filename string) Config {
+func loadYAML(filename string) []string {
 	var config Config
 
 	data, err := os.ReadFile(filename)
@@ -231,7 +234,7 @@ func loadYAML(filename string) Config {
 		panic(err)
 	}
 
-	return config
+	return config.Names
 }
 
 // main function
@@ -242,8 +245,7 @@ func main() {
 
 	// Load the model and classes
 	netModel := loadModel("yolov4-tiny.weights", "yolov4-tiny.cfg")
-	config := loadYAML("classes.yml")
-	classes := config.Names
+	classes := loadYAML("classes.yml")
 
 	detect(netModel, *img, classes)
 }

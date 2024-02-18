@@ -11,6 +11,11 @@ virtualenv:
 	@echo "Create virtualenv"
 	python3 -m venv env
 
+# Download Yolo model files
+download-model:
+	wget https://github.com/AlexeyAB/darknet/releases/download/yolov4/yolov4-tiny.weights -O yolov4-tiny.weights
+	wget https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4-tiny.cfg -O yolov4-tiny.cfg
+
 # Run Python benchmark
 benchmark-python:
 	@echo "Benchmark python"
