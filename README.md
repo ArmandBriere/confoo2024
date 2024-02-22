@@ -725,7 +725,7 @@ for i, idx := range indices {
 
 ---
 
-Average inference time in Python: 93.99 ms
+Average inference time in Python: 97.05 ms
 
 ---
 
@@ -733,7 +733,7 @@ Average inference time in Python: 93.99 ms
 
 ---
 
-Average inference time in Golang: 84.81 ms
+Average inference time in Golang: 87.91 ms
 
 ---
 
@@ -741,7 +741,7 @@ Average inference time in Golang: 84.81 ms
 
 ---
 
-**~10.8 %** inference time increase
+**~11 %** inference time increase
 
 ---
 

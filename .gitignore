@@ -201,3 +201,6 @@ pyrightconfig.json
 # Yolo models
 *.cfg
 *.weights
+
+# Compiled go file
+main
