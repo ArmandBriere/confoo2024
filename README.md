@@ -21,6 +21,10 @@ section::after {
 
 ---
 
+https://github.com/ArmandBriere/confoo2024
+
+---
+
 # Objectif of the presentation
 
 ---
@@ -50,23 +54,6 @@ Go is a statically typed, compiled high-level programming language designed at G
 
 ---
 
-## How to run them?
-
-```bash
-python main.py
-
-go build main.go
-./main
-```
-
-Faster way to run code in dev
-
-```bash
-go run main.go
-```
-
----
-
 ## Hello Confoo
 
 ```py
@@ -83,6 +70,23 @@ import "fmt"
 func main() {
     fmt.Println("Hello Confoo!")
 }
+```
+
+---
+
+## How to run them?
+
+```bash
+python main.py
+
+go build main.go
+./main
+```
+
+Faster way to run code in dev
+
+```bash
+go run main.go
 ```
 
 ---
@@ -302,6 +306,20 @@ func loadModel(yoloModelName string, yoloModelCfg string) gocv.Net {
 
     return net
 }
+```
+
+---
+
+![bg height:70%](./assets/opencv.png)
+
+---
+
+```bash
+pip install opencv-python
+```
+
+```bash
+go get -u -d gocv.io/x/gocv
 ```
 
 ---
