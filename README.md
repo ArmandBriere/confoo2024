@@ -497,7 +497,7 @@ net.setInputParams(size=(416, 416), scale=1 / 255, swapRB=True)
 gocv.BlobFromImage(img, 1/255.0, image.Pt(416, 416), gocv.NewScalar(0, 0, 0, 0), true, false)
 ```
 
-Image, Scale, Size, Mean value to substract for channels, swapRB, crop
+Image, Scale, Size, Mean value to subtract for channels, swapRB, crop
 
 ---
 
