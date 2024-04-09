@@ -6,6 +6,9 @@ default:
 PYTHON_BENCHMARK_RESULTS = python_data.txt
 GOLANG_BENCHMARK_RESULTS = golang_data.txt
 
+MAX_ITERATION = 100
+SHELL := /bin/bash
+
 # Create virtualenv
 virtualenv:
 	@echo "Create virtualenv"
@@ -20,12 +23,16 @@ download-model:
 benchmark-python:
 	@echo "Benchmark python"
 	@rm -f ${PYTHON_BENCHMARK_RESULTS}
-	for run in {1..100}; do python main.py --img mouton.jpg >> ${PYTHON_BENCHMARK_RESULTS}; done
+	for run in {1..${MAX_ITERATION}}; do \
+		python main.py --img mouton.jpg >> ${PYTHON_BENCHMARK_RESULTS}; \
+	done
 	@awk '{s+=$$1}END{print "Average inference time in Python:", s/NR}' ${PYTHON_BENCHMARK_RESULTS}
 
 # Run Golang benchmark
 benchmark-golang:
 	@echo "Benchmark golang"
 	@rm -f ${GOLANG_BENCHMARK_RESULTS}
-	for run in {1..100}; do ./main >> ${GOLANG_BENCHMARK_RESULTS}; done
+	for run in {1..${MAX_ITERATION}}; do \
+		./main --img mouton.jpg >> ${GOLANG_BENCHMARK_RESULTS}; \
+	done
 	@awk '{s+=$$1}END{print "Average inference time in Golang:", s/NR}' ${GOLANG_BENCHMARK_RESULTS}

@@ -25,11 +25,15 @@ https://github.com/ArmandBriere/confoo2024
 
 ---
 
-# Objectif of the presentation
+# Objective of the presentation
 
 ---
 
 ![Google trends](./assets/google-trends.png)
+
+---
+
+![Python vs Golang meme](./assets/python-vs-golang-meme.jpeg)
 
 ---
 
@@ -54,11 +58,11 @@ Go is a statically typed, compiled high-level programming language designed at G
 
 ---
 
-## Hello Confoo
+## Hello Software Crafters
 
 ```py
 # python
-print("Hello Confoo!")
+print("Hello Software Crafters!")
 ```
 
 ```go
@@ -68,7 +72,7 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("Hello Confoo!")
+    fmt.Println("Hello Software Crafters!")
 }
 ```
 
@@ -150,21 +154,21 @@ func addition(x int, y int) int {
 ```go
 // go
 func subtraction(x int, y int) int {
-    var z int
+    var unused_var int
     return x - y
 }
 ```
 
 ```bash
-# confoo24.inference/playground
-./playground.go:23:6: z declared and not used
+# softwareCrafters.inference/playground
+./playground.go:23:6: unused_var declared and not used
 ```
 
 
 ```go
 // go
-func subtraction(x int, y int) (z int) {
-    z = x - y
+func subtraction(x int, y int) (result int) {
+    result = x - y
     return
 }
 ```
@@ -256,8 +260,6 @@ p   0xc000012158
 ---
 
 ### Back to main
-
-What is `*img`?
 
 ---
 
@@ -763,13 +765,23 @@ Average inference time in Golang: 87.91 ms
 
 ---
 
+# Key takeaways
 
-# Questions?
+---
 
+Have fun with your code
 
-![width:1100px](./assets/questions.jpg)
+Don't tunnel vision, for our use case, Golang was faster but **it is not** always the case 
 
-https://github.com/ArmandBriere/confoo2024
+---
+
+# Thanks for listening
+
+Questions?
+
+<!-- ![width:1100px](./assets/questions.jpg) -->
+
+<!-- https://github.com/ArmandBriere/confoo2024 -->
 
 ---
 

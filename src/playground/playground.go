@@ -5,10 +5,14 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"gocv.io/x/gocv"
 )
 
 func main() {
+	gocvVersion := gocv.Version()
 
+	fmt.Println("gocv version:", gocvVersion)
 	x := 42
 	p := &x
 
@@ -22,14 +26,14 @@ func main() {
 	fmt.Println("addition(2, 3)", addition(2, 3))
 	fmt.Println("subtraction(2, 3)", subtraction(2, 3))
 
-	httpGetResult, ok := httpGet("https://www.google.com")
+	_, ok := httpGet("https://www.google.com")
 
 	if !ok {
 		fmt.Println("Failed to get the URL")
 		return
 	}
 
-	fmt.Println("httpGetResult", httpGetResult)
+	fmt.Println("Get request worked")
 }
 
 func addition(x int, y int) int {
