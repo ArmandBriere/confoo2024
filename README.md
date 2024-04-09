@@ -39,8 +39,8 @@ https://github.com/ArmandBriere/confoo2024
 
 # Tools
 
-- Python 3.11.7
-- Go version go1.22.0 linux/amd64
+- Python 3.11.2
+- Go version go1.22.1 linux/amd64
 - OpenCV version:  4.9.0
 - YoloV4
 
@@ -454,7 +454,7 @@ func detect(net gocv.Net, imgPath string, classes []string) {
 
 ---
 
-### Reading the image
+### 1. Reading the image
 
 ---
 
@@ -481,7 +481,7 @@ defer img.Close()
 
 ---
 
-### Prepare the network
+### 2. Prepare the network
 
 ---
 
@@ -501,7 +501,7 @@ Image, Scale, Size, Mean value to subtract for channels, swapRB, crop
 
 ---
 
-## Detect objects
+## 3. Detect objects
 
 ---
 
@@ -552,7 +552,7 @@ func getOutputLayerNames(net *gocv.Net) []string {
 
 ---
 
-### Post processing
+### 4. Post processing
 
 ---
 
@@ -779,9 +779,9 @@ Don't tunnel vision, for our use case, Golang was faster but **it is not** alway
 
 Questions?
 
-<!-- ![width:1100px](./assets/questions.jpg) -->
+![width:1100px](./assets/questions.jpg)
 
-<!-- https://github.com/ArmandBriere/confoo2024 -->
+https://github.com/ArmandBriere/confoo2024
 
 ---
 
